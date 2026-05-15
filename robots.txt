@@ -1,0 +1,8 @@
+# robots.txt — Mentoria ROUTE
+# https://larissasayuri.com
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://larissasayuri.com/sitemap.xml
