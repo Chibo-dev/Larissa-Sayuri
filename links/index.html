@@ -115,13 +115,22 @@ a{color:inherit;text-decoration:none}
 :focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:8px}
 
 /* monograma R girando, bem sutil, no fundo (igual ao hero do site) */
+/* Renderizado como background-image (não como <text> inline): assim este
+   elemento decorativo nunca é eleito LCP, e o LCP passa a ser o conteúdo real */
 .bg-mark{
   position:fixed;top:-40px;right:-60px;width:min(60vw,340px);height:min(60vw,340px);
-  opacity:.06;pointer-events:none;z-index:0;color:var(--gold);
-  animation:rotate 90s linear infinite;
+  opacity:0;pointer-events:none;z-index:0;
+  background:center/contain no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none'%3E%3Ccircle cx='50' cy='50' r='48' stroke='%23C9A84C' stroke-width='0.5'/%3E%3Ccircle cx='50' cy='50' r='38' stroke='%23C9A84C' stroke-width='0.3'/%3E%3Ctext x='50' y='68' font-family='Georgia,serif' font-size='52' font-style='italic' font-weight='300' fill='%23C9A84C' text-anchor='middle'%3ER%3C/text%3E%3C/svg%3E");
+  animation:rotate 90s linear infinite, markIn 1.2s var(--ease-out) .25s forwards;
 }
-.bg-mark-2{top:auto;right:auto;bottom:-60px;left:-60px;animation-direction:reverse;opacity:.05;color:var(--blue)}
+.bg-mark-2{
+  top:auto;right:auto;bottom:-60px;left:-60px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none'%3E%3Ccircle cx='50' cy='50' r='48' stroke='%231A7FD4' stroke-width='0.5'/%3E%3Ccircle cx='50' cy='50' r='38' stroke='%231A7FD4' stroke-width='0.3'/%3E%3C/svg%3E");
+  animation:rotate 90s linear infinite reverse, markIn2 1.2s var(--ease-out) .35s forwards;
+}
 @keyframes rotate{to{transform:rotate(360deg)}}
+@keyframes markIn{to{opacity:.06}}
+@keyframes markIn2{to{opacity:.05}}
 
 /* ── Seletor de idioma PT/EN (mesmo visual do site) ───────────────── */
 .lang-switch{
@@ -358,21 +367,17 @@ footer{opacity:0;animation:fadeUpSoft .8s var(--ease-out) .9s forwards}
   .card-pro .tagline,.card-pro .creds{
     opacity:1!important;transform:none!important;
   }
+  /* Os monogramas decorativos voltam à sua opacidade-alvo (não 1) */
+  .bg-mark{opacity:.06!important}
+  .bg-mark-2{opacity:.05!important}
 }
 </style>
 </head>
 <body>
 
-<!-- monograma R de fundo (decorativo) -->
-<svg class="bg-mark" viewBox="0 0 100 100" fill="none" aria-hidden="true">
-  <circle cx="50" cy="50" r="48" stroke="currentColor" stroke-width="0.5"/>
-  <circle cx="50" cy="50" r="38" stroke="currentColor" stroke-width="0.3"/>
-  <text x="50" y="68" font-family="Georgia,serif" font-size="52" font-style="italic" font-weight="300" fill="currentColor" text-anchor="middle">R</text>
-</svg>
-<svg class="bg-mark bg-mark-2" viewBox="0 0 100 100" fill="none" aria-hidden="true">
-  <circle cx="50" cy="50" r="48" stroke="currentColor" stroke-width="0.5"/>
-  <circle cx="50" cy="50" r="38" stroke="currentColor" stroke-width="0.3"/>
-</svg>
+<!-- monograma R de fundo (decorativo — renderizado via background-image no CSS) -->
+<div class="bg-mark" aria-hidden="true"></div>
+<div class="bg-mark bg-mark-2" aria-hidden="true"></div>
 
 <main class="wrap">
 
