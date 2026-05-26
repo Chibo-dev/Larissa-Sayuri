@@ -1172,6 +1172,21 @@
     padding-top: 20px;
     border-top: 1px solid var(--border-subtle);
   }
+  /* Sem avatar/nome: o cargo recebe um traço dourado como marcador sutil */
+  .dep-author .dep-meta {
+    position: relative;
+    padding-left: 16px;
+  }
+  .dep-author .dep-meta::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 1px;
+    background: var(--gold);
+  }
   .dep-avatar {
     width: 42px;
     height: 42px;
@@ -1263,12 +1278,53 @@
   }
   .faq-item[open] .faq-icon::after { transform: rotate(90deg); }
   .faq-item[open] .faq-icon { transform: rotate(180deg); }
+  /* Animated open/close — grid-rows trick keeps native <details> but adds a soft reveal */
+  .faq-reveal {
+    display: grid;
+    grid-template-rows: 0fr;
+    overflow: hidden;
+    transition: grid-template-rows 0.45s var(--ease-out);
+  }
+  /* JS adds .faq-open-anim one frame after [open], so the collapse→expand transition runs */
+  .faq-item.faq-open-anim .faq-reveal {
+    grid-template-rows: 1fr;
+  }
+  .faq-reveal > .faq-body {
+    overflow: hidden;
+    min-height: 0;
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: opacity 0.4s var(--ease-out) 0.05s, transform 0.45s var(--ease-out) 0.05s;
+  }
+  .faq-item.faq-open-anim .faq-reveal > .faq-body {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  /* No-JS / reduced-motion fallback: native instant open, no transition */
+  html:not(.js) .faq-item[open] .faq-reveal,
+  .faq-item.faq-no-anim[open] .faq-reveal {
+    grid-template-rows: 1fr;
+    transition: none;
+  }
+  html:not(.js) .faq-item[open] .faq-reveal > .faq-body,
+  .faq-item.faq-no-anim[open] .faq-reveal > .faq-body {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
   .faq-body {
-    padding: 0 32px 28px 32px;
+    min-height: 0;
+  }
+  .faq-body-inner {
+    padding: 4px 32px 28px 32px;
     font-size: 13.5px;
     color: var(--slate-strong);
     line-height: 1.75;
     max-width: 720px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .faq-item[open] .faq-reveal { grid-template-rows: 1fr; transition: none; }
+    .faq-item[open] .faq-reveal > .faq-body { opacity: 1; transform: none; transition: none; }
   }
 
   /* ============ CTA FINAL ============ */
@@ -1779,6 +1835,15 @@
     flex-shrink: 0;
     transition: opacity 0.3s var(--ease-out), background 0.3s var(--ease-out);
   }
+  /* Divisor acompanha a identidade da pill em hover (igual à página /links) */
+  .footer-signature:has(a:not(.is-ig):hover) .footer-signature-divider {
+    background: var(--chibo-green);
+    opacity: 1;
+  }
+  .footer-signature:has(a.is-ig:hover) .footer-signature-divider {
+    background: var(--ig-pink);
+    opacity: 1;
+  }
   .footer-signature a {
     display: inline-flex;
     align-items: center;
@@ -1809,6 +1874,7 @@
   }
   .footer-signature a.is-ig {
     padding: 6px 10px;
+    font-weight: 500;
   }
   /* Hover do pill "@chibodev" — identidade Instagram (rosa) */
   .footer-signature a.is-ig:hover {
@@ -1955,7 +2021,7 @@
     .route-content { padding: 18px 22px; }
     .photo-monogram-text { font-size: 72px; }
     .faq-summary { padding: 20px 22px; font-size: 16px; gap: 16px; }
-    .faq-body { padding: 0 22px 24px; font-size: 13px; }
+    .faq-body-inner { padding: 0 22px 24px; font-size: 13px; }
     .quem-content h2 { margin-bottom: 22px; }
     .quem-cred { font-size: 12.5px; }
     body { padding-bottom: 80px; }
@@ -2071,7 +2137,7 @@
       <div class="problema-item" data-pt="Você vê pessoas com metade da sua capacidade indo mais longe — porque elas têm direção, não porque têm sorte." data-en="You see people with half your ability going further — because they have direction, not because they're lucky.">Você vê pessoas com metade da sua capacidade indo mais longe — porque elas têm direção, não porque têm sorte.</div>
       <div class="problema-item" data-pt="Quer crescer na carreira mas sente que vida pessoal e profissional estão sempre em conflito." data-en="You want to grow in your career but feel personal and professional life are always in conflict.">Quer crescer na carreira mas sente que vida pessoal e profissional estão sempre em conflito.</div>
       <div class="problema-item" data-pt="Planeja muito, executa pouco. O perfeccionismo paralisa mais do que impulsiona." data-en="You plan a lot, execute little. Perfectionism paralyzes more than it propels.">Planeja muito, executa pouco. O perfeccionismo paralisa mais do que impulsiona.</div>
-      <div class="problema-item" data-pt="Está ocupada o tempo todo — mas ocupada não é o mesmo que avançando." data-en="You're busy all the time — but busy isn't the same as moving forward.">Está ocupada o tempo todo — mas ocupada não é o mesmo que avançando.</div>
+      <div class="problema-item" data-pt="Está ocupada(o) o tempo todo — mas ocupada(o) não é o mesmo que avançando." data-en="You're busy all the time — but busy isn't the same as moving forward.">Está ocupada(o) o tempo todo — mas ocupada(o) não é o mesmo que avançando.</div>
     </div>
     <div class="problema-verdict reveal">
       <p>
@@ -2186,7 +2252,7 @@
       <div class="sessao-item">
         <div class="sessao-letter">E</div>
         <div class="sessao-name">Execution</div>
-        <div class="sessao-desc" data-pt="Revisão, ajustes e consolidação. Painel de acompanhamento e plano de continuidade. Você sai pronta para sustentar sozinha." data-en="Review, adjustments, and consolidation. Checklist tracker and continuity plan. You leave ready to sustain it on your own.">Revisão, ajustes e consolidação. Painel de acompanhamento e plano de continuidade. Você sai pronta para sustentar sozinha.</div>
+        <div class="sessao-desc" data-pt="Revisão, ajustes e consolidação. Painel de acompanhamento e plano de continuidade. Você sai pronta(o) para sustentar sozinha(o)." data-en="Review, adjustments, and consolidation. Checklist tracker and continuity plan. You leave ready to sustain it on your own.">Revisão, ajustes e consolidação. Painel de acompanhamento e plano de continuidade. Você sai pronta(o) para sustentar sozinha(o).</div>
         <div class="sessao-timing" data-pt="Semana 8" data-en="Week 8">Semana 8</div>
       </div>
       <div class="sessao-item">
@@ -2229,8 +2295,8 @@
           <div class="quem-cred" data-pt="Brasileira vivendo e com uma carreira sólida nos Estados Unidos" data-en="Brazilian living with a solid career in the United States">Brasileira vivendo e com uma carreira sólida nos Estados Unidos</div>
           <div class="quem-cred" data-pt="Mentora Oficial do PMI — Washington DC" data-en="Official PMI Mentor — Washington DC">Mentora Oficial do PMI — Washington DC</div>
         </div>
-        <p class="quem-story" data-pt="Sair do Brasil foi uma das decisões mais difíceis e mais transformadoras da minha vida. Não foi milagre. Foi consistência. Foram mini hábitos. Foi método. E foi aí que nasceu a ROUTE. Hoje, gerencio projetos de oito dígitos como engenheira nos EUA — mas também já fui a pessoa travada, fazendo tudo certo e indo a lugar nenhum. A ROUTE é o que funcionou comigo e com cada mentorada que veio depois. Não é teoria. É mapa de quem já fez o percurso." data-en="Leaving Brazil was one of the hardest and most transformative decisions of my life. It wasn't a miracle. It was consistency. It was micro-habits. It was method. And that's where ROUTE was born. Today I manage eight-figure projects as an engineer in the US — but I've also been the person stuck, doing everything right and going nowhere. ROUTE is what worked for me and for every mentee who came after. It's not theory. It's a map drawn by someone who already walked it.">
-          Sair do Brasil foi uma das decisões mais difíceis e mais transformadoras da minha vida. Não foi milagre. Foi consistência. Foram mini hábitos. Foi método. E foi aí que nasceu a ROUTE. Hoje, gerencio projetos de oito dígitos como engenheira nos EUA — mas também já fui a pessoa travada, fazendo tudo certo e indo a lugar nenhum. A ROUTE é o que funcionou comigo e com cada mentorada que veio depois. Não é teoria. É mapa de quem já fez o percurso.
+        <p class="quem-story" data-pt="Sair do Brasil foi uma das decisões mais difíceis e mais transformadoras da minha vida. Não foi milagre. Foi consistência. Foram mini hábitos. Foi método. E foi aí que nasceu a ROUTE. Hoje, gerencio projetos de oito dígitos como gerente de projetos elétricos nos EUA — mas também já fui a pessoa travada, fazendo tudo certo e indo a lugar nenhum. A ROUTE é o que funcionou comigo e com cada um dos meus mentorados que vieram depois. Não é teoria, e também não é milagre. É mapa de quem já fez o percurso." data-en="Leaving Brazil was one of the hardest and most transformative decisions of my life. It wasn't a miracle. It was consistency. It was micro-habits. It was method. And that's where ROUTE was born. Today I manage eight-figure projects as an Electrical Project Manager in the US — but I've also been the person stuck, doing everything right and going nowhere. ROUTE is what worked for me and for every mentee who came after. It's not theory. It's a map drawn by someone who already walked it.">
+          Sair do Brasil foi uma das decisões mais difíceis e mais transformadoras da minha vida. Não foi milagre. Foi consistência. Foram mini hábitos. Foi método. E foi aí que nasceu a ROUTE. Hoje, gerencio projetos de oito dígitos como gerente de projetos elétricos nos EUA — mas também já fui a pessoa travada, fazendo tudo certo e indo a lugar nenhum. A ROUTE é o que funcionou comigo e com cada um dos meus mentorados que vieram depois. Não é teoria, e também não é milagre. É mapa de quem já fez o percurso.
         </p>
       </div>
     </div>
@@ -2288,38 +2354,32 @@
     </div>
     <div class="dep-grid reveal-stagger">
       <article class="dep-card">
-        <p class="dep-quote" data-pt="Cheguei sentindo que minha vida e minha carreira nunca se encaixariam. Saí dos 3 meses com um plano que não é da Larissa nem de ninguém — é meu. Pela primeira vez consigo enxergar a próxima década com clareza, não com ansiedade." data-en="I arrived feeling that my life and my career would never fit together. I left those 3 months with a plan that isn't Larissa's or anyone else's — it's mine. For the first time, I can see the next decade with clarity, not anxiety.">
-          Cheguei sentindo que minha vida e minha carreira nunca se encaixariam. Saí dos 3 meses com um plano que não é da Larissa nem de ninguém — é meu. Pela primeira vez consigo enxergar a próxima década com clareza, não com ansiedade.
+        <p class="dep-quote" data-pt="Cheguei sentindo que minha vida e minha carreira nunca se encaixariam. Saí dos 3 meses com um plano totalmente personalizado e, pela primeira vez, consigo enxergar a próxima década com clareza — não com ansiedade." data-en="I arrived feeling like my life and career would never fall into place. I left the 3 months with a fully personalized plan and, for the first time, I can see the next decade with clarity — not with anxiety.">
+          Cheguei sentindo que minha vida e minha carreira nunca se encaixariam. Saí dos 3 meses com um plano totalmente personalizado e, pela primeira vez, consigo enxergar a próxima década com clareza — não com ansiedade.
         </p>
         <div class="dep-author">
-          <div class="dep-avatar" aria-hidden="true">M</div>
           <div class="dep-meta">
-            <div class="dep-name">Mariana R.</div>
-            <div class="dep-role" data-pt="Gerente de Produto · São Paulo" data-en="Product Manager · São Paulo">Gerente de Produto · São Paulo</div>
+            <div class="dep-role" data-pt="Gerente de Produto · São Paulo, Brasil" data-en="Product Manager · São Paulo, Brazil">Gerente de Produto · São Paulo, Brasil</div>
           </div>
         </div>
       </article>
       <article class="dep-card">
-        <p class="dep-quote" data-pt="Sou engenheira, moro fora há 7 anos e achava que o problema era falta de disciplina. Não era. Era falta de método. O ROUTE me deu a estrutura que minha cabeça analítica precisava — sem virar planilha sem alma." data-en="I'm an engineer, I've lived abroad for 7 years, and I thought my problem was lack of discipline. It wasn't. It was lack of method. ROUTE gave me the structure my analytical mind needed — without turning into a soulless spreadsheet.">
-          Sou engenheira, moro fora há 7 anos e achava que o problema era falta de disciplina. Não era. Era falta de método. O ROUTE me deu a estrutura que minha cabeça analítica precisava — sem virar planilha sem alma.
+        <p class="dep-quote" data-pt="Sou engenheira, moro fora há 7 anos e achava que o problema era falta de disciplina. Não era. Era falta de método. A ROUTE me deu a estrutura que eu precisava e a confiança para seguir com meus objetivos pessoais e profissionais." data-en="I'm an engineer, I've lived abroad for 7 years and I thought the problem was lack of discipline. It wasn't. It was lack of method. ROUTE gave me the structure I needed and the confidence to move forward with my personal and professional goals.">
+          Sou engenheira, moro fora há 7 anos e achava que o problema era falta de disciplina. Não era. Era falta de método. A ROUTE me deu a estrutura que eu precisava e a confiança para seguir com meus objetivos pessoais e profissionais.
         </p>
         <div class="dep-author">
-          <div class="dep-avatar" aria-hidden="true">A</div>
           <div class="dep-meta">
-            <div class="dep-name">Amanda K.</div>
-            <div class="dep-role" data-pt="Engenheira · Boston, EUA" data-en="Engineer · Boston, USA">Engenheira · Boston, EUA</div>
+            <div class="dep-role" data-pt="Engenheira · São Paulo, Brasil" data-en="Engineer · São Paulo, Brazil">Engenheira · São Paulo, Brasil</div>
           </div>
         </div>
       </article>
       <article class="dep-card">
-        <p class="dep-quote" data-pt="Eu vinha de cinco cursos de produtividade e ainda travada. Com a Larissa entendi que o problema nunca foi 'fazer mais' — era saber o que merecia ser feito. Os 6 encontros foram o ponto de virada que dois anos de coaching não tinham conseguido." data-en="I had come from five productivity courses and was still stuck. With Larissa I understood the problem was never 'doing more' — it was knowing what was worth doing. Those 6 sessions were the turning point that two years of coaching hadn't achieved.">
-          Eu vinha de cinco cursos de produtividade e ainda travada. Com a Larissa entendi que o problema nunca foi "fazer mais" — era saber o que merecia ser feito. Os 6 encontros foram o ponto de virada que dois anos de coaching não tinham conseguido.
+        <p class="dep-quote" data-pt="Eu vinha de cinco cursos de produtividade e ainda sentia que havia uma trava. Com a Larissa Sayuri entendi que o problema nunca foi 'fazer mais' — era saber priorizar o que merecia ser feito para chegar onde eu queria. Os 6 encontros foram o ponto de virada que dois anos de coaching não tinham conseguido. Consegui mais clareza na minha vida e, além disso, fui promovida no trabalho." data-en="I had taken five productivity courses and still felt stuck. With Larissa Sayuri I understood that the problem was never 'doing more' — it was knowing how to prioritize what deserved to be done to get where I wanted. The 6 sessions were the turning point that two years of coaching hadn't achieved. I gained clarity in my life and, on top of that, I got promoted at work.">
+          Eu vinha de cinco cursos de produtividade e ainda sentia que havia uma trava. Com a Larissa Sayuri entendi que o problema nunca foi "fazer mais" — era saber priorizar o que merecia ser feito para chegar onde eu queria. Os 6 encontros foram o ponto de virada que dois anos de coaching não tinham conseguido. Consegui mais clareza na minha vida e, além disso, fui promovida no trabalho.
         </p>
         <div class="dep-author">
-          <div class="dep-avatar" aria-hidden="true">J</div>
           <div class="dep-meta">
-            <div class="dep-name">Juliana T.</div>
-            <div class="dep-role" data-pt="Advogada · Lisboa, Portugal" data-en="Lawyer · Lisbon, Portugal">Advogada · Lisboa, Portugal</div>
+            <div class="dep-role" data-pt="Social Media · Flórida, EUA" data-en="Social Media Manager · Florida, USA">Social Media · Flórida, EUA</div>
           </div>
         </div>
       </article>
@@ -2343,8 +2403,10 @@
           <span data-pt="Como funciona o investimento?" data-en="How does the investment work?">Como funciona o investimento?</span>
           <span class="faq-icon" aria-hidden="true"></span>
         </summary>
-        <div class="faq-body" data-pt="A Mentoria ROUTE é um investimento de alto comprometimento — na faixa do que se paga por um módulo de MBA executivo. O valor exato e as condições (BRL ou USD, à vista ou parcelado) são definidos na conversa inicial, porque dependem do seu momento e do escopo combinado." data-en="The ROUTE Mentorship is a high-commitment investment — in the range of what an executive MBA module costs. The exact amount and conditions (BRL or USD, one-time or installments) are defined in the initial conversation, since they depend on your moment and the scope we agree on.">
-          A Mentoria ROUTE é um investimento de alto comprometimento — na faixa do que se paga por um módulo de MBA executivo. O valor exato e as condições (BRL ou USD, à vista ou parcelado) são definidos na conversa inicial, porque dependem do seu momento e do escopo combinado.
+        <div class="faq-reveal">
+          <div class="faq-body">
+            <div class="faq-body-inner" data-pt="O investimento no pacote completo da Mentoria ROUTE é de R$3.500 à vista ou 3x R$1.299. O pagamento é realizado após a conversa inicial de alinhamento — onde juntas confirmamos que a mentoria é o caminho certo para você agora." data-en="The full ROUTE Mentorship investment is $950, paid in a single payment. Payment is made after our initial alignment conversation — where we both confirm this is the right path for you right now.">O investimento no pacote completo da Mentoria ROUTE é de R$3.500 à vista ou 3x R$1.299. O pagamento é realizado após a conversa inicial de alinhamento — onde juntas confirmamos que a mentoria é o caminho certo para você agora.</div>
+          </div>
         </div>
       </details>
       <details class="faq-item">
@@ -2352,8 +2414,10 @@
           <span data-pt="Em quanto tempo eu vejo resultado?" data-en="How soon will I see results?">Em quanto tempo eu vejo resultado?</span>
           <span class="faq-icon" aria-hidden="true"></span>
         </summary>
-        <div class="faq-body" data-pt="Clareza você sente já na primeira sessão. Resultados práticos começam a aparecer entre a semana 4 e 6, quando o plano sai do papel. Os 3 meses são desenhados para você não só atingir os objetivos do ciclo, mas sair com um método de execução próprio que sustenta os próximos." data-en="You feel clarity in the very first session. Practical results start appearing between weeks 4 and 6, when the plan moves from paper to reality. The 3 months are designed so you don't just hit the cycle's goals, but leave with your own execution method that sustains the next ones.">
-          Clareza você sente já na primeira sessão. Resultados práticos começam a aparecer entre a semana 4 e 6, quando o plano sai do papel. Os 3 meses são desenhados para você não só atingir os objetivos do ciclo, mas sair com um método de execução próprio que sustenta os próximos.
+        <div class="faq-reveal">
+          <div class="faq-body">
+            <div class="faq-body-inner" data-pt="O processo completo dura 3 meses — 5 sessões quinzenais + 1 follow-up 30 dias depois. Clareza e direção chegam nas primeiras sessões. Mudanças concretas na rotina e na carreira acontecem ao longo do processo — e dependem do seu comprometimento com as atividades práticas entre as sessões. A mentoria te mostra o caminho. Mas é você quem decide caminhar." data-en="The full process takes 3 months — 5 bi-weekly sessions + 1 follow-up 30 days later. Clarity and direction come in the first sessions. Concrete changes in your routine and career happen throughout the process — and depend on your commitment to the practical work between sessions. The mentorship shows you the path. But you're the one who decides to walk it.">O processo completo dura 3 meses — 5 sessões quinzenais + 1 follow-up 30 dias depois. Clareza e direção chegam nas primeiras sessões. Mudanças concretas na rotina e na carreira acontecem ao longo do processo — e dependem do seu comprometimento com as atividades práticas entre as sessões. A mentoria te mostra o caminho. Mas é você quem decide caminhar.</div>
+          </div>
         </div>
       </details>
       <details class="faq-item">
@@ -2361,17 +2425,21 @@
           <span data-pt="As sessões são em Português ou Inglês?" data-en="Are sessions in Portuguese or English?">As sessões são em Português ou Inglês?</span>
           <span class="faq-icon" aria-hidden="true"></span>
         </summary>
-        <div class="faq-body" data-pt="Você escolhe. Larissa é fluente em ambos e a mentoria roda 100% em qualquer um dos dois idiomas — ou mesclando, se for o seu caso (brasileira no exterior, ambiente bilíngue de trabalho, etc)." data-en="You choose. Larissa is fluent in both, and the mentorship runs 100% in either language — or mixing them, if that's your situation (Brazilian abroad, bilingual work environment, etc).">
-          Você escolhe. Larissa é fluente em ambos e a mentoria roda 100% em qualquer um dos dois idiomas — ou mesclando, se for o seu caso (brasileira no exterior, ambiente bilíngue de trabalho, etc).
+        <div class="faq-reveal">
+          <div class="faq-body">
+            <div class="faq-body-inner" data-pt="As sessões acontecem no idioma que você preferir — Português ou Inglês. Você escolhe na hora de se inscrever e podemos adaptar ao longo do processo se precisar." data-en="Sessions are conducted in your preferred language — Portuguese or English. You choose when you sign up, and we can adapt throughout the process if needed.">As sessões acontecem no idioma que você preferir — Português ou Inglês. Você escolhe na hora de se inscrever e podemos adaptar ao longo do processo se precisar.</div>
+          </div>
         </div>
       </details>
       <details class="faq-item">
         <summary class="faq-summary">
-          <span data-pt="Como funciona o formato e fuso horário?" data-en="How does format and time zone work?">Como funciona o formato e fuso horário?</span>
+          <span data-pt="Como funciona o formato e fuso horário?" data-en="How does the format and time zone work?">Como funciona o formato e fuso horário?</span>
           <span class="faq-icon" aria-hidden="true"></span>
         </summary>
-        <div class="faq-body" data-pt="Todas as sessões são online, ao vivo, individuais. Larissa está nos EUA e atende mentoradas no Brasil, EUA e Europa. Os horários são combinados sessão a sessão respeitando os dois fusos, com flexibilidade para sua agenda." data-en="All sessions are live, online, and one-on-one. Larissa is based in the US and works with mentees in Brazil, the US, and Europe. Times are arranged session by session respecting both time zones, with flexibility for your schedule.">
-          Todas as sessões são online, ao vivo, individuais. Larissa está nos EUA e atende mentoradas no Brasil, EUA e Europa. Os horários são combinados sessão a sessão respeitando os dois fusos, com flexibilidade para sua agenda.
+        <div class="faq-reveal">
+          <div class="faq-body">
+            <div class="faq-body-inner" data-pt="As sessões são 100% online, por videochamada — você acessa de qualquer lugar do mundo. Estou baseada nos EUA (EST/EDT) e atendo clientes no Brasil e nos EUA. Os horários são combinados individualmente após a conversa inicial, respeitando o fuso horário de cada pessoa." data-en="Sessions are 100% online, via video call — you can join from anywhere in the world. I'm based in the US (EST/EDT) and work with clients in both Brazil and the US. Scheduling is done individually after our initial conversation, respecting each person's time zone.">As sessões são 100% online, por videochamada — você acessa de qualquer lugar do mundo. Estou baseada nos EUA (EST/EDT) e atendo clientes no Brasil e nos EUA. Os horários são combinados individualmente após a conversa inicial, respeitando o fuso horário de cada pessoa.</div>
+          </div>
         </div>
       </details>
       <details class="faq-item">
@@ -2379,17 +2447,21 @@
           <span data-pt="E se eu sentir que não é pra mim depois de começar?" data-en="What if I feel it's not for me after starting?">E se eu sentir que não é pra mim depois de começar?</span>
           <span class="faq-icon" aria-hidden="true"></span>
         </summary>
-        <div class="faq-body" data-pt="É exatamente para evitar esse cenário que existe a conversa inicial — sem custo e sem compromisso. Ela serve para os dois lados avaliarem fit. Se a mentoria não fizer sentido para você nesse momento, Larissa será a primeira a dizer." data-en="That's exactly why the initial conversation exists — at no cost and no commitment. It's for both sides to assess fit. If the mentorship doesn't make sense for you at this moment, Larissa will be the first to say so.">
-          É exatamente para evitar esse cenário que existe a conversa inicial — sem custo e sem compromisso. Ela serve para os dois lados avaliarem fit. Se a mentoria não fizer sentido para você nesse momento, Larissa será a primeira a dizer.
+        <div class="faq-reveal">
+          <div class="faq-body">
+            <div class="faq-body-inner" data-pt="Antes de qualquer investimento, fazemos uma conversa inicial gratuita de alinhamento. Nessa conversa, as duas partes avaliam se há fit — só seguimos em frente se sentirmos que é o caminho certo. Por isso a taxa de satisfação é alta — porque ninguém entra no processo sem ter certeza antes." data-en="Before any investment, we have a free initial alignment conversation. In that call, both sides evaluate the fit — we only move forward if we both feel it's the right path. That's why satisfaction is high — because no one starts the process without being sure first.">Antes de qualquer investimento, fazemos uma conversa inicial gratuita de alinhamento. Nessa conversa, as duas partes avaliam se há fit — só seguimos em frente se sentirmos que é o caminho certo. Por isso a taxa de satisfação é alta — porque ninguém entra no processo sem ter certeza antes.</div>
+          </div>
         </div>
       </details>
       <details class="faq-item">
         <summary class="faq-summary">
-          <span data-pt="Qual o tempo médio de dedicação por semana?" data-en="How much time per week is needed?">Qual o tempo médio de dedicação por semana?</span>
+          <span data-pt="Qual o tempo médio de dedicação por semana?" data-en="What's the average time commitment per week?">Qual o tempo médio de dedicação por semana?</span>
           <span class="faq-icon" aria-hidden="true"></span>
         </summary>
-        <div class="faq-body" data-pt="De 1h30 a 3h semanais, incluindo a sessão quinzenal e as atividades práticas entre encontros. O método foi desenhado para vidas reais — profissionais ocupadas, com filhos, com rotinas internacionais. A ideia é integrar à sua vida, não competir com ela." data-en="1.5 to 3 hours per week, including the biweekly session and practical activities between meetings. The method was designed for real lives — busy professionals, with kids, with international routines. The idea is to integrate into your life, not compete with it.">
-          De 1h30 a 3h semanais, incluindo a sessão quinzenal e as atividades práticas entre encontros. O método foi desenhado para vidas reais — profissionais ocupadas, com filhos, com rotinas internacionais. A ideia é integrar à sua vida, não competir com ela.
+        <div class="faq-reveal">
+          <div class="faq-body">
+            <div class="faq-body-inner" data-pt="Entre 1 e 2 horas por semana — incluindo a sessão mensal e as atividades práticas entre os encontros. O método foi desenhado para caber na sua rotina real, não para adicionar mais pressão à sua vida. A ideia é simplificar, não complicar." data-en="Between 1 and 2 hours per week — including the session and the practical activities between meetings. The method was designed to fit your real routine, not to add more pressure to your life. The goal is to simplify, not complicate.">Entre 1 e 2 horas por semana — incluindo a sessão mensal e as atividades práticas entre os encontros. O método foi desenhado para caber na sua rotina real, não para adicionar mais pressão à sua vida. A ideia é simplificar, não complicar.</div>
+          </div>
         </div>
       </details>
     </div>
@@ -2446,11 +2518,11 @@
           </div>
           <div class="form-field">
             <label class="form-label" for="whatsapp">
-              <span data-pt="WhatsApp com código do país" data-en="WhatsApp with country code">WhatsApp com código do país</span>
+              <span data-pt="Número de telefone com código do país" data-en="Phone number with country code">Número de telefone com código do país</span>
               <span class="req">*</span>
             </label>
             <input type="tel" id="whatsapp" name="whatsapp" required autocomplete="tel" data-pt-placeholder="+55 11 99999-9999" data-en-placeholder="+1 555 000-0000" placeholder="+55 11 99999-9999">
-            <div class="form-error" data-pt="Informe seu WhatsApp com código do país." data-en="Please enter your WhatsApp with country code.">Informe seu WhatsApp com código do país.</div>
+            <div class="form-error" data-pt="Informe seu número de telefone com código do país." data-en="Please enter your phone number with country code.">Informe seu número de telefone com código do país.</div>
           </div>
           <div class="form-field">
             <label class="form-label" for="cidade">
@@ -2957,6 +3029,47 @@
     focusGroups.forEach(setupFocusGroup);
   }
 
+  // ── FAQ: abertura/fechamento suave (mantém <details> nativo + acessível)
+  (function setupFaqAnimation(){
+    var items = Array.prototype.slice.call(document.querySelectorAll('.faq-item'));
+    if (!items.length) return;
+    var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    items.forEach(function(item){
+      var summary = item.querySelector('.faq-summary');
+      var reveal = item.querySelector('.faq-reveal');
+      if (!summary || !reveal) return;
+
+      summary.addEventListener('click', function(e){
+        if (reduceMotion) return; // deixa o comportamento nativo
+
+        if (item.hasAttribute('open')) {
+          // Fechar com transição: previne o fechamento instantâneo nativo
+          e.preventDefault();
+          var onEnd = function(ev){
+            if (ev.propertyName !== 'grid-template-rows') return;
+            reveal.removeEventListener('transitionend', onEnd);
+            item.removeAttribute('open');
+          };
+          reveal.addEventListener('transitionend', onEnd);
+          item.classList.remove('faq-open-anim');
+        } else {
+          // Abrir: fecha os demais (accordion suave)
+          items.forEach(function(other){
+            if (other !== item && other.hasAttribute('open')) {
+              other.classList.remove('faq-open-anim');
+              other.removeAttribute('open');
+            }
+          });
+          // deixa o <details> nativo aplicar [open], depois ativa o estado animado
+          requestAnimationFrame(function(){
+            requestAnimationFrame(function(){ item.classList.add('faq-open-anim'); });
+          });
+        }
+      });
+    });
+  })();
+
   // ── Form multi-step → E-mail (via Web3Forms)
   var form = document.getElementById('route-form');
 
@@ -3017,7 +3130,7 @@
       nameInvalid: 'Informe um nome válido (mínimo 2 letras).',
       emailInvalid: 'Informe um e-mail válido (ex: nome@dominio.com).',
       emailTypo: 'Verifique o domínio do e-mail. Você quis dizer "{suggestion}"?',
-      telInvalid: 'Informe um telefone válido com código do país.',
+      telInvalid: 'Informe um número de telefone válido com código do país.',
       telBRInvalid: 'Número BR precisa ter 11 dígitos (DDD + 9 dígitos).',
       telUSInvalid: 'Número EUA precisa ter 10 dígitos (DDD + 7 dígitos).',
       otherRequired: 'Por favor, especifique sua opção.',
