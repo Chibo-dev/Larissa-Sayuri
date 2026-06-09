@@ -175,13 +175,19 @@ a{color:inherit;text-decoration:none}
 
 .portrait{
   position:relative;z-index:1;
+  display:block;overflow:hidden;
   width:clamp(96px,26vw,118px);height:clamp(96px,26vw,118px);
-  border-radius:50%;object-fit:cover;object-position:center top;
+  border-radius:50%;
   margin:0 auto 18px;
   border:1px solid var(--border);
   box-shadow:0 0 0 4px var(--midnight), 0 0 0 5px rgba(201,168,76,.25),
              0 14px 30px -10px rgba(0,0,0,.6);
   background:var(--midnight-2);
+}
+.portrait img{
+  width:100%;height:100%;
+  object-fit:cover;object-position:center top;
+  transform:scale(1.12);
 }
 .name{
   position:relative;z-index:1;
@@ -390,9 +396,9 @@ footer{opacity:0;animation:fadeUpSoft .8s var(--ease-out) .9s forwards}
   <!-- ════════ CARTÃO DE PERFIL ════════ -->
   <section class="card-pro">
     <span class="eyebrow" data-pt="Mentoria ROUTE" data-en="ROUTE Mentorship">Mentoria ROUTE</span>
-    <picture>
+    <picture class="portrait">
       <source srcset="../images/larissa-sayuri-links.webp" type="image/webp">
-      <img class="portrait" src="../images/larissa-sayuri-links.png" alt="Larissa Sayuri" width="118" height="118" decoding="async">
+      <img src="../images/larissa-sayuri-links.png" alt="Larissa Sayuri" width="118" height="118" decoding="async">
     </picture>
     <h1 class="name">Larissa Sayuri</h1>
     <p class="tagline">Your route to the life you want.</p>
